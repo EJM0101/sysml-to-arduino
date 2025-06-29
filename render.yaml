@@ -3,12 +3,9 @@ services:
     name: sysml-to-arduino
     runtime: python
     buildCommand: |
-      pip install -r requirements.txt && python -c "from app import db; from wsgi import application; db.create_all(app=application)"
-    startCommand: |
-      gunicorn --worker-tmp-dir /dev/shm wsgi:application --bind 0.0.0.0:$PORT --timeout 120 --workers 4
+      pip install -r requirements.txt
+    startCommand: gunicorn --worker-tmp-dir /dev/shm app:app
     envVars:
       - key: FLASK_ENV
         value: production
-      - key: SECRET_KEY
-        generateValue: true
     plan: free
