@@ -2,33 +2,60 @@
 
 {% block content %}
 <div class="container">
-    <h2 class="my-4">Code Arduino Généré</h2>
-    
     <div class="card mb-4">
-        <div class="card-header">
-            <div class="d-flex justify-content-between">
-                <span>sysml_model.ino</span>
-                <button class="btn btn-sm btn-outline-secondary" onclick="copyCode()">
-                    Copier le Code
-                </button>
+        <div class="card-header bg-dark text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Code Arduino Généré</h4>
+                <div>
+                    <button onclick="copyCode()" class="btn btn-sm btn-light">
+                        <i class="bi bi-clipboard"></i> Copier
+                    </button>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-arrow-left"></i> Retour
+                    </a>
+                </div>
             </div>
         </div>
         <div class="card-body">
             <pre><code class="language-cpp">{{ code }}</code></pre>
         </div>
+        <div class="card-footer bg-light">
+            <p class="small text-muted mb-0">
+                <i class="bi bi-info-circle"></i> Ce code est basé sur vos modèles SysML.
+                Vérifiez les pins avant téléversement.
+            </p>
+        </div>
     </div>
 
-    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
-        Retour à l'éditeur
-    </a>
+    <!-- Section Test Rapide -->
+    <div class="card">
+        <div class="card-header bg-warning">
+            <h5>Comment tester ce code ?</h5>
+        </div>
+        <div class="card-body">
+            <ol>
+                <li>Connectez :
+                    <ul>
+                        <li>Capteur PIR → Pin 2</li>
+                        <li>LED/Buzzer → Pin 3</li>
+                    </ul>
+                </li>
+                <li>Téléversez le code</li>
+                <li>Ouvrez le Moniteur Série (9600 bauds)</li>
+            </ol>
+            <div class="alert alert-success small">
+                <strong>Résultat attendu :</strong> La LED/buzzer s'active quand le capteur détecte un mouvement.
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
 function copyCode() {
     const code = `{{ code }}`;
     navigator.clipboard.writeText(code)
-        .then(() => alert('Code copié dans le presse-papier!'))
-        .catch(err => console.error('Erreur de copie:', err));
+        .then(() => alert('Code copié !'))
+        .catch(err => console.error(err));
 }
 </script>
 {% endblock %}
