@@ -14,9 +14,9 @@ class Requirement(db.Model):
 class Block(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    type = db.Column(db.String(50))
-    operations = db.Column(db.Text)
+    type = db.Column(db.String(50), nullable=False)  # système, sous-système, composant
     properties = db.Column(db.Text)
+    operations = db.Column(db.Text)
     constraints = db.Column(db.Text)
 
     def __repr__(self):
