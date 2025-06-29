@@ -10,7 +10,7 @@ csrf = CSRFProtect()
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///models.db'
-    app.config['SECRET_KEY'] = 'votre_cle_secrete_ici'  # Changez ceci en production
+    app.config['SECRET_KEY'] = 'votre_cle_secrete_reel'  # Changez ceci en production
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     db.init_app(app)
