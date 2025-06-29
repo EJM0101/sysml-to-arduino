@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_wtf.csrf import CSRFError
 from app.models.sysml_models import Requirement, Block
 from app.models.arduino_generator import ArduinoGenerator
@@ -11,8 +11,8 @@ def index():
     requirements = Requirement.query.order_by(Requirement.req_id).all()
     blocks = Block.query.order_by(Block.name).all()
     return render_template('diagram_editor.html',
-                        requirements=requirements,
-                        blocks=blocks)
+                         requirements=requirements,
+                         blocks=blocks)
 
 @main_routes.route('/create_requirement', methods=['POST'])
 def create_requirement():
@@ -73,5 +73,5 @@ def generate_arduino():
 
 @main_routes.errorhandler(CSRFError)
 def handle_csrf_error(e):
-    flash('Erreur de sécurité: Veuillez rafraîchir la page et réessayer', 'danger')
+    flash('Session expirée. Veuillez rafraîchir la page et réessayer.', 'danger')
     return redirect(url_for('main.index'))
