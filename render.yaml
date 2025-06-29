@@ -4,10 +4,17 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-    startCommand: gunicorn --worker-tmp-dir /dev/shm "app:create_app()"
+    startCommand: gunicorn --worker-tmp-dir /dev/shm "app:create_app()" --timeout 120
     envVars:
       - key: FLASK_ENV
         value: production
-      - key: SECRET_KEY  # Ajoutez ceci !
-        value: votre_cle_secrete_reele  # Générer une vraie clé
+      - key: SECRET_KEY
+        value: votre_cle_secrete_reel
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sysml_to_arduino_db
+          property: connectionString
+
+databases:
+  - name: sysml_to_arduino_db
     plan: free
