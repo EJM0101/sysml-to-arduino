@@ -1,27 +1,67 @@
-<form method="POST" action="{{ url_for('main.create_block') }}">
-    <div class="mb-3">
-        <label class="form-label">Nom du Bloc</label>
-        <input type="text" name="name" class="form-control" required>
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h3>Diagramme de Blocs</h3>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Type</label>
-        <select name="type" class="form-select" required>
-            <option value="Système">Système</option>
-            <option value="Sous-système">Sous-système</option>
-            <option value="Composant">Composant</option>
-        </select>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <strong>Capteur :</strong>
+                    <ul class="small">
+                        <li><b>Nom</b>: Capteur PIR</li>
+                        <li><b>Type</b>: Composant</li>
+                        <li><b>Propriétés</b>: pin=2</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <strong>Actionneur :</strong>
+                    <ul class="small">
+                        <li><b>Nom</b>: Alarme</li>
+                        <li><b>Type</b>: Composant</li>
+                        <li><b>Propriétés</b>: pin=3</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('main.create_block') }}">
+            <div class="mb-3">
+                <label class="form-label">Nom du Bloc</label>
+                <input type="text" name="name" class="form-control" required
+                       placeholder="Ex: Capteur PIR" value="Capteur PIR">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Type</label>
+                <select name="type" class="form-select" required>
+                    <option value="Système">Système</option>
+                    <option value="Sous-système">Sous-système</option>
+                    <option value="Composant" selected>Composant</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Propriétés</label>
+                <textarea name="properties" class="form-control" rows="2"
+                          placeholder="Ex: pin=2, seuil=500">pin=2</textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Opérations</label>
+                <textarea name="operations" class="form-control" rows="2"
+                          placeholder="Ex: detecter_mouvement()">detecter_mouvement()</textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Créer Bloc</button>
+        </form>
+
+        <!-- Liste des Blocs -->
+        <div class="mt-4">
+            <h5>Blocs Existants</h5>
+            <ul class="list-group">
+                {% for block in blocks %}
+                    <li class="list-group-item">
+                        <strong>{{ block.name }}</strong> ({{ block.type }})
+                        <br><small>{{ block.properties }}</small>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Opérations</label>
-        <textarea name="operations" class="form-control" rows="2" required></textarea>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Propriétés</label>
-        <textarea name="properties" class="form-control" rows="2" required></textarea>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Contraintes</label>
-        <textarea name="constraints" class="form-control" rows="2"></textarea>
-    </div>
-    <button type="submit" class="btn btn-success">Créer Bloc</button>
-</form>
+</div>
