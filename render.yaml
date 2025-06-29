@@ -4,8 +4,10 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-    startCommand: gunicorn --worker-tmp-dir /dev/shm app:app
+    startCommand: gunicorn --worker-tmp-dir /dev/shm "app:create_app()"
     envVars:
       - key: FLASK_ENV
         value: production
+      - key: SECRET_KEY  # Ajoutez ceci !
+        value: votre_cle_secrete_reele  # Générer une vraie clé
     plan: free
