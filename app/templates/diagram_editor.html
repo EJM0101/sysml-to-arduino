@@ -3,10 +3,10 @@
 {% block content %}
 <div class="container">
     <h1 class="mb-4">SysML Editor</h1>
-    
+
     <div class="row">
         <div class="col-md-6">
-            <!-- Formulaire Exigences -->
+            <!-- Formulaire Exigences avec exemple -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
                     <h3>Diagramme d'Exigences</h3>
@@ -22,20 +22,21 @@
                     </div>
 
                     <form method="POST" action="{{ url_for('main.create_requirement') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        
                         <div class="mb-3">
-                            <label class="form-label">Nom de l'exigence</label>
+                            <label class="form-label">Nom de l'exigence*</label>
                             <input type="text" name="name" class="form-control" required 
-                                   placeholder="Ex: Détection Mouvement">
+                                   value="Détection Mouvement">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea name="text" class="form-control" rows="2" required
-                                      placeholder="Ex: Détecter présence via capteur PIR">Détecter présence via capteur PIR</textarea>
+                            <label class="form-label">Description*</label>
+                            <textarea name="text" class="form-control" rows="2" required>Détecter présence via capteur PIR</textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">ID</label>
+                            <label class="form-label">ID*</label>
                             <input type="text" name="req_id" class="form-control" required
-                                   placeholder="Ex: SEC-001" value="SEC-001">
+                                   value="SEC-001">
                         </div>
                         <button type="submit" class="btn btn-primary">Créer Exigence</button>
                     </form>
@@ -43,49 +44,128 @@
             </div>
 
             <!-- Liste des Exigences -->
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header bg-secondary text-white">
                     <h4>Exigences Existantes</h4>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group">
-                        {% for req in requirements %}
-                            <li class="list-group-item">
-                                <strong>{{ req.req_id }}</strong>: {{ req.name }}
-                                <br><small>{{ req.text }}</small>
-                            </li>
-                        {% endfor %}
-                    </ul>
+                    {% if requirements %}
+                        <ul class="list-group">
+                            {% for req in requirements %}
+                                <li class="list-group-item">
+                                    <strong>{{ req.req_id }}</strong>: {{ req.name }}
+                                    <br><small>{{ req.text }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Aucune exigence créée</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            {% include 'diagram_block.html' %}
-            
-            <!-- Section Exemple Complet -->
-            <div class="card mt-4">
-                <div class="card-header bg-info text-white">
-                    <h4>Exemple Test Rapide</h4>
+            <!-- Diagramme de Blocs -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3>Diagramme de Blocs</h3>
                 </div>
                 <div class="card-body">
-                    <p><b>Pour tester rapidement :</b></p>
-                    <ol class="small">
-                        <li>Créez 1 exigence "Détection Mouvement"</li>
-                        <li>Créez 2 blocs :
-                            <ul>
-                                <li>"Capteur PIR" (Composant, pin=2)</li>
-                                <li>"Alarme" (Composant, pin=3)</li>
-                            </ul>
-                        </li>
-                        <li>Générez le code</li>
-                    </ol>
-                    <div class="text-center mt-3">
-                        <a href="{{ url_for('main.generate_arduino') }}" 
-                           class="btn btn-warning">
-                            <i class="bi bi-lightning"></i> Générer Code
-                        </a>
+                    <div class="alert alert-info">
+                        <strong>Exemple à tester :</strong>
+                        <ul class="mt-2 mb-0">
+                            <li><b>Nom</b>: Capteur PIR</li>
+                            <li><b>Type</b>: Composant</li>
+                            <li><b>Propriétés</b>: pin=2, seuil=500</li>
+                        </ul>
                     </div>
+
+                    <form method="POST" action="{{ url_for('main.create_block') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                        <div class="mb-3">
+                            <label class="form-label">Nom du Bloc*</label>
+                            <input type="text" name="block_name" class="form-control" required
+                                   value="Capteur PIR">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Type*</label>
+                            <select name="block_type" class="form-select" required>
+                                <option value="système">Système</option>
+                                <option value="sous-système">Sous-système</option>
+                                <option value="composant" selected>Composant</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Propriétés</label>
+                            <textarea name="properties" class="form-control" rows="2">pin=2, seuil=500</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Opérations</label>
+                            <textarea name="operations" class="form-control" rows="2">detecter_mouvement()</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Contraintes</label>
+                            <textarea name="constraints" class="form-control" rows="2">temps_reponse < 100ms</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Créer Bloc</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Liste des Blocs -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4>Blocs Existants</h4>
+                </div>
+                <div class="card-body">
+                    {% if blocks %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Type</th>
+                                        <th>Propriétés</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for block in blocks %}
+                                        <tr>
+                                            <td>{{ block.name }}</td>
+                                            <td>{{ block.type }}</td>
+                                            <td><small>{{ block.properties }}</small></td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">Aucun bloc créé</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Génération de Code -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h3 class="mb-0">Génération de Code Arduino</h3>
+                </div>
+                <div class="card-body text-center">
+                    <p>Créez au moins une exigence et un bloc avant de générer le code</p>
+                    <a href="{{ url_for('main.generate_arduino') }}" class="btn btn-lg btn-warning">
+                        <i class="bi bi-lightning-charge"></i> Générer le Code
+                    </a>
                 </div>
             </div>
         </div>
