@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: sysml-to-arduino
+    runtime: python
+    buildCommand: |
+      pip install -r requirements.txt
+      python -c "from app import db, create_app; db.create_all(app=create_app())"
+    startCommand: gunicorn --worker-tmp-dir /dev/shm app:create_app()
+    envVars:
+      - key: FLASK_ENV
+        value: production
+    plan: free
