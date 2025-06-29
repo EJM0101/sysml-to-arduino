@@ -4,7 +4,6 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-      python -c "from app import db, app; db.create_all(app=app)"
     startCommand: gunicorn --worker-tmp-dir /dev/shm app:app
     envVars:
       - key: FLASK_ENV
