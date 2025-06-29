@@ -2,81 +2,92 @@
 
 {% block content %}
 <div class="container">
+    <h1 class="mb-4">SysML Editor</h1>
+    
     <div class="row">
         <div class="col-md-6">
+            <!-- Formulaire Exigences -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
                     <h3>Diagramme d'Exigences</h3>
                 </div>
                 <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Exemple à tester :</strong>
+                        <ul class="mt-2 mb-0">
+                            <li><b>Nom</b>: Détection Mouvement</li>
+                            <li><b>Description</b>: Détecter présence via capteur PIR</li>
+                            <li><b>ID</b>: SEC-001</li>
+                        </ul>
+                    </div>
+
                     <form method="POST" action="{{ url_for('main.create_requirement') }}">
                         <div class="mb-3">
                             <label class="form-label">Nom de l'exigence</label>
-                            <input type="text" name="name" class="form-control" required>
+                            <input type="text" name="name" class="form-control" required 
+                                   placeholder="Ex: Détection Mouvement">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Description</label>
-                            <textarea name="text" class="form-control" rows="3" required></textarea>
+                            <textarea name="text" class="form-control" rows="2" required
+                                      placeholder="Ex: Détecter présence via capteur PIR">Détecter présence via capteur PIR</textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">ID (ex: REQ-001)</label>
-                            <input type="text" name="req_id" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Parent (optionnel)</label>
-                            <select name="parent_id" class="form-select">
-                                <option value="">Aucun</option>
-                                {% for req in requirements %}
-                                    <option value="{{ req.id }}">{{ req.req_id }} - {{ req.name }}</option>
-                                {% endfor %}
-                            </select>
+                            <label class="form-label">ID</label>
+                            <input type="text" name="req_id" class="form-control" required
+                                   placeholder="Ex: SEC-001" value="SEC-001">
                         </div>
                         <button type="submit" class="btn btn-primary">Créer Exigence</button>
                     </form>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <div class="card-header bg-success text-white">
-                    <h3>Diagramme de Blocs</h3>
+            <!-- Liste des Exigences -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h4>Exigences Existantes</h4>
                 </div>
                 <div class="card-body">
-                    {% include 'diagram_block.html' %}
+                    <ul class="list-group">
+                        {% for req in requirements %}
+                            <li class="list-group-item">
+                                <strong>{{ req.req_id }}</strong>: {{ req.name }}
+                                <br><small>{{ req.text }}</small>
+                            </li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="text-center mt-3">
-        <a href="{{ url_for('main.generate_arduino') }}" class="btn btn-lg btn-warning">
-            <i class="bi bi-lightning-charge"></i> Générer Code Arduino
-        </a>
-    </div>
-
-    <div class="row mt-4">
         <div class="col-md-6">
-            <h4>Liste des Exigences</h4>
-            <ul class="list-group">
-                {% for req in requirements %}
-                    <li class="list-group-item">
-                        <strong>{{ req.req_id }}</strong>: {{ req.name }}
-                        {% if req.parent %}<br><small>Enfant de: {{ req.parent.req_id }}</small>{% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col-md-6">
-            <h4>Liste des Blocs</h4>
-            <ul class="list-group">
-                {% for block in blocks %}
-                    <li class="list-group-item">
-                        <strong>{{ block.name }}</strong> ({{ block.type }})<br>
-                        <small>{{ block.operations }}</small>
-                    </li>
-                {% endfor %}
-            </ul>
+            {% include 'diagram_block.html' %}
+            
+            <!-- Section Exemple Complet -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h4>Exemple Test Rapide</h4>
+                </div>
+                <div class="card-body">
+                    <p><b>Pour tester rapidement :</b></p>
+                    <ol class="small">
+                        <li>Créez 1 exigence "Détection Mouvement"</li>
+                        <li>Créez 2 blocs :
+                            <ul>
+                                <li>"Capteur PIR" (Composant, pin=2)</li>
+                                <li>"Alarme" (Composant, pin=3)</li>
+                            </ul>
+                        </li>
+                        <li>Générez le code</li>
+                    </ol>
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('main.generate_arduino') }}" 
+                           class="btn btn-warning">
+                            <i class="bi bi-lightning"></i> Générer Code
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
