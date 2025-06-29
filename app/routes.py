@@ -48,5 +48,10 @@ def create_block():
 def generate_arduino():
     requirements = Requirement.query.all()
     blocks = Block.query.all()
+    
+    if not blocks:
+        flash("Créez d'abord des blocs pour générer du code", 'warning')
+        return redirect(url_for('main.index'))
+    
     arduino_code = ArduinoGenerator.generate_from_models(requirements, blocks)
     return render_template('code_output.html', code=arduino_code)
