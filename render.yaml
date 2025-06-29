@@ -4,8 +4,12 @@ services:
     runtime: python
     buildCommand: |
       pip install -r requirements.txt
-    startCommand: gunicorn --worker-tmp-dir /dev/shm app:app
+      python migrate.py
+    startCommand: |
+      gunicorn --worker-tmp-dir /dev/shm app:app --bind 0.0.0.0:$PORT --timeout 120
     envVars:
       - key: FLASK_ENV
         value: production
+      - key: SECRET_KEY
+        value: votre_cle_secrete_ici
     plan: free
