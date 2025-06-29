@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf  # Ajout de l'import manquant
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -30,7 +30,7 @@ def create_app():
     from app.routes import main_routes
     app.register_blueprint(main_routes)
 
-    # Protection CSRF globale
+    # Protection CSRF globale (version corrigée)
     @app.after_request
     def add_csrf_token(response):
         response.set_cookie('csrf_token', generate_csrf())
