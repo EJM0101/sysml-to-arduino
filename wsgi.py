@@ -1,6 +1,4 @@
-from app import create_app
-
-application = create_app()  # Note: 'application' est requis par Render
+from app import app
 
 if __name__ == "__main__":
-    application.run()
+    app.run()
