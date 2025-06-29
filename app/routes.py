@@ -8,23 +8,17 @@ main_routes = Blueprint('main', __name__)
 
 @main_routes.route('/')
 def index():
-    requirements = Requirement.query.all()
-    blocks = Block.query.all()
-    return render_template('diagram_editor.html', 
-                         requirements=requirements, 
-                         blocks=blocks)
+    requirements = Requirement.query.order_by(Requirement.req_id).all()
+    blocks = Block.query.order_by(Block.name).all()
+    return render_template('diagram_editor.html',
+                        requirements=requirements,
+                        blocks=blocks)
 
 @main_routes.route('/create_requirement', methods=['POST'])
-@csrf.exempt  # Temporaire pour debug - À RETIRER après vérification
 def create_requirement():
     try:
-        # Vérification CSRF (décommenter après test)
-        # if not validate_csrf(request.form.get('csrf_token')):
-        #     flash('Token de sécurité invalide', 'danger')
-        #     return redirect(url_for('main.index'))
-
         if not all(key in request.form for key in ['name', 'text', 'req_id']):
-            flash('Tous les champs sont requis', 'danger')
+            flash('Tous les champs obligatoires doivent être remplis', 'danger')
             return redirect(url_for('main.index'))
 
         req = Requirement(
@@ -37,14 +31,15 @@ def create_requirement():
         db.session.commit()
         flash('Exigence créée avec succès!', 'success')
     except Exception as e:
-        flash(f'Erreur: {str(e)}', 'danger')
+        flash(f'Erreur lors de la création: {str(e)}', 'danger')
     return redirect(url_for('main.index'))
 
 @main_routes.route('/create_block', methods=['POST'])
 def create_block():
     try:
         if not all(field in request.form for field in ['block_name', 'block_type']):
-            return jsonify({'error': 'Champs manquants'}), 400
+            flash('Les champs Nom et Type sont obligatoires', 'danger')
+            return redirect(url_for('main.index'))
 
         block = Block(
             name=request.form['block_name'],
@@ -57,18 +52,26 @@ def create_block():
         db.session.commit()
         flash('Bloc créé avec succès!', 'success')
     except Exception as e:
-        flash(f'Erreur: {str(e)}', 'danger')
-        return jsonify({'error': str(e)}), 400
+        flash(f'Erreur lors de la création: {str(e)}', 'danger')
     return redirect(url_for('main.index'))
 
 @main_routes.route('/generate_arduino')
 def generate_arduino():
-    requirements = Requirement.query.all()
-    blocks = Block.query.all()
-    arduino_code = ArduinoGenerator.generate_from_models(requirements, blocks)
-    return render_template('code_output.html', code=arduino_code)
+    try:
+        requirements = Requirement.query.all()
+        blocks = Block.query.all()
+        
+        if not requirements or not blocks:
+            flash('Créez au moins une exigence et un bloc avant de générer le code', 'warning')
+            return redirect(url_for('main.index'))
+
+        arduino_code = ArduinoGenerator.generate_from_models(requirements, blocks)
+        return render_template('code_output.html', code=arduino_code)
+    except Exception as e:
+        flash(f'Erreur lors de la génération: {str(e)}', 'danger')
+        return redirect(url_for('main.index'))
 
 @main_routes.errorhandler(CSRFError)
 def handle_csrf_error(e):
-    flash('Erreur de sécurité: Token CSRF invalide ou expiré', 'danger')
+    flash('Erreur de sécurité: Veuillez rafraîchir la page et réessayer', 'danger')
     return redirect(url_for('main.index'))
