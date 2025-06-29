@@ -10,20 +10,22 @@ csrf = CSRFProtect()
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///models.db'
-    app.config['SECRET_KEY'] = 'votre_cle_secrete_ici'  # Changez ceci en production
+    app.config['SECRET_KEY'] = 'votre_cle_secrete_ici'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    # Import des modèles ICI avant db.init_app
+    from app.models.sysml_models import Requirement, Block
     
     db.init_app(app)
     bootstrap.init_app(app)
-    csrf.init_app(app)  # Activation CSRF
-    
+    csrf.init_app(app)
+
     with app.app_context():
-        db.create_all()
-    
+        db.create_all()  # Crée toutes les tables
+
     from app.routes import main_routes
     app.register_blueprint(main_routes)
-    
+
     return app
 
-# Instance de l'application pour Gunicorn
 app = create_app()
